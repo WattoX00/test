@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reaction Time Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #a {
+            width: 100vw;
+            height: 30vw;
+            text-align: center;
+            line-height: 100px;
+            color: #ffffff;
+            font-size: 3em;
+            cursor: pointer;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+        }
+        #a:active {
+            transform: scale(0.95);
+        }
+        #text {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #bbbbbb;
+        }
+        #menu-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background: #ff4747;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+            border: none;
+            text-align: center;
+        }
+
+        #menu-button:hover {
+            background: #cc3838;
+        }
+
+    </style>
+</head>
+<body>
+    <a href="index.html" id="menu-button">Back to Menu</a>
+    <div id="a" onclick="handleClick()">CLICK!</div>
+    <div id="text" style="margin-top: 20px; padding: 10px 20px; background-color: #1e1e1e; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4); color: #bbbbbb; font-size: 18px; display: inline-block; visibility: hidden;"></div>
+
+    <script>
+        let isGreen = false;
+        let timer = null;
+        let startTime = 0;
+
+        function start() {
+            const div = document.getElementById('a');
+            div.style.backgroundColor = '#b71c1c';
+            div.textContent = "WAIT...";
+            isGreen = false;
+
+            const randomTime = Math.random() * 5000 + 2000;
+            timer = setTimeout(() => {
+                div.style.backgroundColor = '#388e3c';
+                div.textContent = "CLICK NOW!";
+                isGreen = true;
+                startTime = Date.now();
+            }, randomTime);
+        }
+
+        function handleClick() {
+        const div = document.getElementById('a');
+        const textDisplay = document.getElementById('text');
+
+        if (!isGreen) {
+            clearTimeout(timer);
+            div.textContent = "TOO SOON!";
+            textDisplay.style.visibility = 'hidden';
+            start();
+        } else {
+            const reactionTime = Date.now() - startTime;
+            textDisplay.innerHTML = `Your reaction time: ${reactionTime}ms`;
+            textDisplay.style.visibility = 'visible';
+            div.textContent = "PLAY AGAIN";
+            div.style.backgroundColor = '#b71c1c';
+            isGreen = false;
+        }
+    }
+
+        start();
+    </script>
+</body>
+</html>

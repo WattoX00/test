@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Speed Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #121212;
+      color: #e0e0e0;
+      user-select: none;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 600px;
+      width: 90%;
+      background: #1e1e1e;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+    }
+
+    .text-display {
+      margin-bottom: 20px;
+      font-size: 18px;
+      line-height: 1.5;
+      color: #e0e0e0;
+    }
+
+    .correct {
+      color: #4caf50;
+    }
+
+    .incorrect {
+      color: #f44336;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 10px 0;
+      font-size: 16px;
+      border: 2px solid #333;
+      border-radius: 5px;
+      outline: none;
+      background-color: #262626;
+      color: #e0e0e0;
+    }
+
+    .stats {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #bdbdbd;
+    }
+
+    .restart-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #fff;
+      background-color: #2196f3;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .restart-btn:hover {
+      background-color: #1976d2;
+    }
+
+    ::selection {
+      background: none;
+    }
+    #menu-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background: #ff4747;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+            border: none;
+            text-align: center;
+        }
+
+        #menu-button:hover {
+            background: #cc3838;
+        }
+
+  </style>
+</head>
+<body>
+    <a href="index.html" id="menu-button">Back to Menu</a>
+    
+  <div class="container">
+    <div class="text-display" id="text-display">Loading text...</div>
+    <input 
+      type="text" 
+      id="typing-input" 
+      class="input-field" 
+      placeholder="Start typing here..." 
+      disabled autocomplete="off"
+      />
+    <div class="stats" id="stats">Time: 0s | WPM: 0</div>
+    <button class="restart-btn" id="restart-btn">Restart Test</button>
+  </div>
+
+  <script>
+    const sampleTexts = [
+      "The quick brown fox jumps over the lazy dog. This classic pangram is often used to test typing skills, as it contains every letter in the English alphabet.",
+      "In a small village nestled in the hills, there was a legend about a treasure hidden deep within the forest. Many adventurers had tried to find it, but none returned.",
+      "Typing tests are not only a fun way to improve your skills but also an essential practice for anyone looking to increase their productivity at work.",
+      "The development of typing speed and accuracy can greatly enhance your efficiency in both professional and personal tasks. Practice regularly to see improvements.",
+      "Artificial intelligence has made significant strides in recent years, transforming industries ranging from healthcare to entertainment. Typing is a skill that remains crucial.",
+      "Once upon a time, in a faraway kingdom, a young prince set out on a quest to find a magical artifact said to grant its holder unparalleled wisdom.",
+      "Learning to type quickly and accurately is a valuable skill. It not only saves time but also allows you to communicate more effectively in the digital age.",
+      "The stars twinkled brightly in the night sky as the campers gathered around the fire, sharing stories about their adventures in the wilderness.",
+      "In the modern workplace, typing is a fundamental skill. Whether you’re composing emails, drafting reports, or coding, speed and accuracy are key.",
+      "The art of storytelling has evolved with technology. From oral traditions to printed books and now digital media, the way we share stories continues to change.",
+      "A group of friends decided to embark on a journey across the country, documenting their experiences and learning about the diverse cultures they encountered.",
+      "Improving your typing skills can be as simple as practicing for a few minutes each day. Start with short exercises and gradually increase the difficulty.",
+      "The old library was filled with ancient books and manuscripts. Among them was a map that supposedly led to a hidden treasure.",
+      "Typing speed is measured in words per minute (WPM). To calculate your WPM, count the number of words typed in a minute and adjust for errors.",
+      "In a world driven by technology, being able to type efficiently is more important than ever. Start practicing today to enhance your digital communication.",
+      "The sound of rain tapping against the window created a soothing rhythm as she typed away on her laptop, lost in her creative writing.",
+      "In an era of instant communication, fast typing skills can make a significant difference in how quickly and effectively you convey your thoughts.",
+      "The majestic mountain range was a breathtaking sight. It inspired many to document their experiences through photography, painting, and writing.",
+      "With the rise of remote work, typing has become an even more essential skill. Whether you’re attending virtual meetings or sending messages, speed matters.",
+      "The sun set over the horizon, casting a golden glow across the landscape. It was a moment that reminded them of the beauty of the natural world.",
+      "Typing games are a great way to make learning fun. They challenge you to improve your speed and accuracy in a playful and engaging manner.",
+      "In the heart of the bustling city, a group of writers gathered to share their latest works and exchange ideas about storytelling and creativity.",
+      "The process of learning to type can be broken down into manageable steps. Start with the basics and build up to more complex exercises.",
+      "The ancient ruins were shrouded in mystery. Explorers from around the world came to uncover their secrets and learn about the past.",
+      "The rapid advancement of technology has made typing a universal skill. It’s a cornerstone of communication in both personal and professional settings.",
+      "A young student discovered the joy of writing stories after learning how to type. It opened up a new world of creativity and expression.",
+      "The vast desert stretched out before them, its dunes glowing under the moonlight. It was an awe-inspiring scene that they would never forget.",
+      "Developing typing skills requires patience and practice. Start with simple exercises and work your way up to longer and more challenging texts.",
+      "The bustling marketplace was alive with sounds and colors. It was a place where stories were exchanged along with goods and services.",
+      "The sound of waves crashing against the shore was a reminder of the power and beauty of nature. It inspired many to capture its essence through art.",
+      "Typing competitions are a fun way to test your skills against others. They provide an exciting challenge and a chance to measure your progress.",
+      "The winding path through the forest was lined with ancient trees. It was a place of tranquility, where one could reflect and find inspiration.",
+      "Amidst the undulating hills and shadowy woods, the dawn broke with an ineffable serenity, illuminating the dewdrops on the verdant foliage.",
+      "The antiquarian pondered the tome with a discerning gaze, his fingers tracing the vellum pages inscribed with arcane lore.",
+      "Through the labyrinthine streets of the old quarter, the aroma of freshly baked bread mingled with the pungent scent of tanneries.",
+      "The tempestuous seas battered the forlorn lighthouse, its beacon struggling against the encroaching darkness.",
+      "Her countenance was suffused with an ethereal glow, as though she were a sylph born of the twilight.",
+      "Beneath the starry firmament, the sojourners regaled one another with tales of valor and folly, their laughter echoing across the dunes.",
+      "The cacophony of the bustling marketplace was punctuated by the melodic strains of a lute, played by a wandering minstrel.",
+      "An aura of antiquity pervaded the grand hall, its stone walls adorned with faded tapestries depicting bygone glories.",
+      "In the quietude of the cloistered garden, the scent of jasmine intermingled with the distant tolling of a church bell.",
+      "The philosopher expounded upon the nature of existence, his soliloquy a tapestry of paradoxes and profundities.",
+      "A plume of alabaster smoke rose languidly from the chimneys, dissipating into the cerulean expanse above.",
+      "The knight's cuirass gleamed in the noonday sun as he rode forth, his steed's mane rippling like a banner in the wind.",
+      "She perused the manuscript with meticulous care, her quill poised to emend any errant phrase or misplaced comma.",
+      "The venerable oak, gnarled and weathered, stood as a silent sentinel over the meadow, its roots delving deep into the earth.",
+      "The arras concealed a hidden alcove where conspirators whispered their clandestine designs.",
+      "A symphony of cicadas filled the balmy night, their persistent drone lulling the weary travelers to sleep.",
+      "The alabaster columns of the temple rose imperiously, their capitals adorned with intricate carvings of mythic beasts.",
+      "Through the latticework of the window, the moonlight spilled into the chamber, casting delicate patterns upon the marble floor.",
+      "The briny tang of the sea filled the air as the fisherman mended his net, his weathered hands moving with practiced ease.",
+      "In the sepulchral silence of the crypt, the faint rustle of a bat's wings was enough to quicken the pulse.",
+      "The bibliophile's sanctum was a labyrinth of shelves, each crammed with leather-bound tomes and obscure folios.",
+      "The village fete was a kaleidoscope of colors and sounds, with laughter mingling with the clatter of hooves on cobblestones.",
+      "A tapestry of frost adorned the windowpane, its intricate patterns reminiscent of forgotten heraldry.",
+      "The cavalcade wound its way through the forest, the jingling of harnesses and the clop of hooves echoing through the glades.",
+      "In the gloaming, the river was a ribbon of molten silver, winding its way through the verdant valley.",
+      "The sentinel on the battlements surveyed the horizon, his silhouette stark against the amber glow of dusk.",
+      "A faint miasma hung over the swamp, its fetid vapors curling around the gnarled roots of ancient mangroves.",
+      "The itinerant merchant unfurled a bolt of silk, its iridescent hues shimmering in the sunlight.",
+      "Beneath the vaulted ceiling of the cathedral, the choir's harmonies ascended like a supplication to the divine.",
+      "The alchemist's laboratory was a veritable chaos of retorts, alembics, and manuscripts scrawled with esoteric formulas.",
+      "In the courtly dance, their movements were a choreography of grace, each step a tribute to an unspoken harmony.",
+      "The galleon's prow cleaved the waves as it ventured into the uncharted expanse of the open ocean.",
+      "A cavalier in a plumed hat doffed his cap with a flourish, his demeanor a blend of gallantry and mirth.",
+      "The arboretum was a sanctuary of rare and exotic flora, each specimen meticulously tended by the horticulturist.",
+      "Through the filigree of the iron gate, the moonlight painted arabesques upon the cobbled path.",
+      "The raconteur held his audience spellbound, his tales a tapestry of wit, intrigue, and peril.",
+      "The aurora borealis danced across the polar sky, its luminous hues a celestial ballet.",
+      "A patina of rust covered the ancient helmet, its once-proud crest now a shadow of its former glory.",
+      "The samovar hissed softly, its warmth a comfort against the chill of the Russian winter.",
+      "The flotsam of a shipwreck littered the shore, each fragment a silent testament to the sea's caprice.",
+      "The cloaked figure moved with preternatural silence, a phantom in the moonlit alley.",
+      "The harpsichord's notes resonated through the drawing room, a melody that evoked both melancholy and nostalgia.",
+      "A labyrinthine hedge maze concealed a forgotten fountain, its waters murmuring a serenade to the encroaching ivy.",
+      "The connoisseur swirled the wine in his goblet, its ruby hue glinting in the candlelight as he savored its bouquet.",
+      "The abbey stood in solemn repose, its stained glass windows depicting scenes of martyrdom and redemption.",
+      "The farrier's hammer rang out against the anvil, each strike a symphony of industry and craft.",
+      "A zephyr stirred the meadow, setting the wildflowers to dance in a riot of color.",
+      "The ornate reliquary gleamed with gold and precious stones, its contents a relic of a bygone saint.",
+      "The philosopher's discourse was a labyrinth of dialectics, each argument a step deeper into the maze of reason.",
+      "Through the gossamer veil of mist, the silhouette of a solitary figure emerged, a wanderer in search of solace."
+    ];
+
+    const textDisplay = document.getElementById('text-display');
+    const typingInput = document.getElementById('typing-input');
+    const stats = document.getElementById('stats');
+    const restartBtn = document.getElementById('restart-btn');
+
+    let selectedText = "";
+    let timerInterval = null;
+    let startTime = null;
+
+    function resetTest() {
+      selectedText = sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
+      renderTextDisplay();
+      typingInput.value = "";
+      stats.textContent = "Time: 0s | WPM: 0";
+      typingInput.disabled = false;
+      typingInput.focus();
+      clearInterval(timerInterval);
+      startTime = null;
+    }
+
+    function renderTextDisplay() {
+      textDisplay.innerHTML = selectedText
+        .split("")
+        .map(char => `<span>${char}</span>`)
+        .join("");
+    }
+
+    function updateTextDisplay() {
+      const typedText = typingInput.value;
+      const spans = textDisplay.querySelectorAll('span');
+
+      spans.forEach((span, index) => {
+        if (index < typedText.length) {
+          if (typedText[index] === selectedText[index]) {
+            span.className = 'correct';
+          } else {
+            span.className = 'incorrect';
+          }
+        } else {
+          span.className = '';
+        }
+      });
+    }
+
+    function calculateWPM(elapsedTime, typedText) {
+      const wordsTyped = typedText.trim().split(" ").length;
+      return Math.round((wordsTyped / elapsedTime) * 60);
+    }
+
+    typingInput.addEventListener('input', () => {
+      if (!startTime) {
+        startTime = Date.now();
+        timerInterval = setInterval(() => {
+          const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+          const wpm = calculateWPM(elapsedTime, typingInput.value);
+          stats.textContent = `Time: ${elapsedTime}s | WPM: ${wpm}`;
+        }, 1000);
+      }
+
+      updateTextDisplay();
+
+      if (typingInput.value === selectedText) {
+        clearInterval(timerInterval);
+        const elapsedTime = (Date.now() - startTime) / 1000;
+        const wpm = calculateWPM(elapsedTime, typingInput.value);
+        stats.textContent = `Completed! Time: ${elapsedTime.toFixed(1)}s | WPM: ${wpm}`;
+        typingInput.disabled = true;
+      }
+    });
+
+    restartBtn.addEventListener('click', resetTest);
+
+    // Initialize the test on page load
+    resetTest();
+  </script>
+</body>
+</html>

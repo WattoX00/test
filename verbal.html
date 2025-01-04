@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Memory Game</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: "Noto Sans KR", serif;
+            font-optical-sizing: auto;
+            font-weight: 100;
+            font-style: normal;
+        }
+
+        .game-box {
+            position: absolute;
+            top: 40%;
+            transform: translateY(-40%);
+            text-align: center;
+            background: #1e1e1e;
+            border: 2px solid #333;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 20px;
+            width: 300px;
+        }
+
+        .word {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .seen {
+            background-color: #4caf50;
+        }
+
+        .not-seen {
+            background-color: #f44336;
+        }
+
+        .start {
+            background-color: #007bff;
+        }
+
+        .status {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .overlay.active {
+            display: flex;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .overlay button {
+            padding: 15px 30px;
+            font-size: 20px;
+        }#menu-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background: #ff4747;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+            border: none;
+            text-align: center;
+        }
+
+        #menu-button:hover {
+            background: #cc3838;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" id="menu-button">Back to Menu</a>
+    <div class="overlay" id="start-overlay">
+        <button class="start" id="btns" onclick="startGame()">Start Game</button>
+    </div>
+    <div class="game-box" id="game-box" style="display: none;">
+        <div class="word" id="word-display">Loading...</div>
+        <div class="buttons">
+            <button class="seen" onclick="handleGuess(true)">Seen</button>
+            <button class="not-seen" onclick="handleGuess(false)">Not Seen</button>
+        </div>
+        <div class="status">
+            <p>Score: <span id="score">0</span></p>
+            <p>Lives: <span id="lives">3</span></p>
+        </div>
+    </div>
+
+    <script>
+        const allWords = [
+            "Abstruse", "Accolade", "Acrimony", "Adroit", "Aegis", "Alacrity", "Anathema", "Anomaly", "Antediluvian",
+            "Antithesis", "Aphorism", "Apocryphal", "Arbitrary", "Arduous", "Ascetic", "Aspersion", "Assiduous", "Axiom",
+            "Bellicose", "Benign", "Bilk", "Callous", "Capricious", "Chicanery", "Circumlocution", "Clandestine", "Clemency",
+            "Cognizant", "Commensurate", "Conflagration", "Congruent", "Conundrum", "Copious", "Cryptic", "Curmudgeon",
+            "Cynosure", "Deleterious", "Demagogue", "Denizen", "Diatribe", "Didactic", "Dilatory", "Disparate", "Dissemble",
+            "Ebullient", "Eclectic", "Edify", "Efficacious", "Effrontery", "Egregious", "Elegy", "Elicit", "Elucidate",
+            "Emollient", "Empirical", "Enervate", "Enigma", "Ephemeral", "Epiphany", "Epitome", "Equanimity", "Equivocate",
+            "Erudite", "Esoteric", "Ethereal", "Evanescent", "Exacerbate", "Exculpate", "Execrable", "Exigent", "Expedite",
+            "Extant", "Extol", "Facetious", "Fallacious", "Fastidious", "Fatuous", "Feckless", "Felicity", "Feral", "Fervent",
+            "Flippant", "Florid", "Foible", "Forlorn", "Fortuitous", "Fractious", "Furtive", "Garrulous", "Gregarious",
+            "Guile", "Hackneyed", "Halcyon", "Harangue", "Hapless", "Hegemony", "Heresy", "Iconoclast", "Idiosyncratic",
+            "Ignominious", "Imbroglio", "Impecunious", "Impetuous", "Implacable", "Impute", "Inchoate", "Incisive", "Incontrovertible",
+            "Indefatigable", "Indolent", "Ineffable", "Inept", "Infamy", "Ingenuous", "Inimical", "Iniquity", "Insidious", "Insipid",
+            "Interlocutor", "Intransigent", "Inveterate", "Irrevocable", "Jocular", "Jubilation", "Judicious", "Juxtaposition", "Kismet",
+            "Laconic", "Lament", "Largesse", "Latent", "Laudatory", "Lethargy", "Licentious", "Lionize", "Lithe", "Loquacious",
+            "Magnanimous", "Malediction", "Malevolent", "Malfeasance", "Malign", "Maverick", "Mawkish", "Mendacious", "Meritorious",
+            "Meticulous", "Misanthrope", "Modicum", "Morose", "Multifarious", "Munificent", "Myopic", "Nefarious", "Nonchalant",
+            "Nostalgia", "Obdurate", "Obfuscate", "Oblique", "Obsequious", "Obstreperous", "Obtuse", "Odious", "Officious", "Onerous",
+            "Opulent", "Ostensible", "Ostentatious", "Panacea", "Paragon", "Pariah", "Paucity", "Pejorative", "Pellucid", "Penchant",
+            "Penury", "Perfidious", "Perfunctory", "Perspicacious", "Pertinacious", "Pervasive", "Petulant", "Phlegmatic", "Platitude",
+            "Plethora", "Polemical", "Portent", "Precarious", "Precocious", "Prescient", "Prevaricate", "Proclivity", "Profligate",
+            "Propensity", "Propitious", "Puerile", "Pugnacious", "Pulchritude", "Quagmire", "Querulous", "Quixotic", "Rancor",
+            "Recalcitrant", "Reciprocity", "Recondite", "Redoubtable", "Relegate", "Remiss", "Replete", "Reprobate", "Rescind",
+            "Restive", "Rhetoric", "Sagacious", "Salubrious", "Sanguine", "Scurrilous", "Sedulous", "Sinecure", "Solicitous",
+            "Solipsism", "Somnolent", "Spurious", "Stolid", "Strident", "Sublime", "Subversive", "Surreptitious", "Sycophant",
+            "Tacit", "Taciturn", "Temerity", "Tenuous", "Tepid", "Timorous", "Tirade", "Torpor", "Tractable", "Trite",
+            "Truculent", "Ubiquitous", "Umbrage", "Unctuous", "Upbraid", "Vacillate", "Vapid", "Variegated", "Vehement",
+            "Venal", "Verbose", "Vicarious", "Vicissitude", "Virulent", "Vitiate", "Vociferous", "Wane", "Wary", "Winsome",
+            "Wistful", "Zealot", "Zenith"
+        ];
+        let currentWords = [];
+        let seenWords = new Set();
+        let currentWord = "";
+        let score = 0;
+        let lives = 3;
+        let newWordsShown = 0;
+
+        function getRandomSubset(array, size) {
+            const shuffled = [...array].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, size);
+        }
+
+        function refillWordList() {
+            const remainingWords = allWords.filter(word => !currentWords.includes(word));
+            currentWords.push(...getRandomSubset(remainingWords, 20));
+        }
+
+        function initializeGame() {
+            currentWords = getRandomSubset(allWords, 20);
+            score = 0;
+            lives = 3;
+            newWordsShown = 0;
+            seenWords.clear();
+            document.getElementById("score").textContent = score;
+            document.getElementById("lives").textContent = lives;
+            document.querySelectorAll("button").forEach(btn => btn.disabled = false);
+            showWord();
+        }
+
+        function getRandomWord() {
+            return currentWords[Math.floor(Math.random() * currentWords.length)];
+        }
+
+        function showWord() {
+            currentWord = getRandomWord();
+            document.getElementById("word-display").textContent = currentWord;
+        }
+
+        function handleGuess(isSeen) {
+            if (isSeen === seenWords.has(currentWord)) {
+                score++;
+            } else {
+                lives--;
+            }
+
+            seenWords.add(currentWord);
+            newWordsShown++;
+
+            document.getElementById("score").textContent = score;
+            document.getElementById("lives").textContent = lives;
+
+            if (lives > 0) {
+                if (newWordsShown >= 15) {
+                    refillWordList();
+                    newWordsShown = 0;
+                }
+                showWord();
+            } else {
+                document.getElementById("word-display").textContent = "Game Over!";
+                document.querySelectorAll(".seen, .not-seen").forEach(btn => btn.disabled = true);
+                document.getElementById("start-overlay").classList.add("active");
+                document.getElementById("start-overlay").style.display = "block";
+
+            }
+        }
+        function startGame() {
+            document.getElementById("start-overlay").classList.remove("active");
+            document.getElementById("game-box").style.display = "block";
+            initializeGame();
+            document.getElementById("start-overlay").style.display = "none";
+        }
+        document.getElementById("start-overlay").classList.add("active");
+    </script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guessing Game</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100&display=swap');
+
+        body {
+            font-family: "Noto Sans KR", serif;
+            font-optical-sizing: auto;
+            font-weight: 100;
+            font-style: normal;
+            background-color: #121212;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #ffffff;
+        }
+        .container {
+            text-align: center;
+            background: #1e1e1e;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            padding: 20px 40px;
+            max-width: 400px;
+            width: 90%;
+        }
+        #btn {
+            background: #0066ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 auto;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        #btn:hover {
+            background: #004bcc;
+        }
+        #btn:focus {
+            outline: none;
+            border-color: #0066ff;
+            box-shadow: 0 0 5px #0066ff;
+        }
+        #text {
+            font-size: 25px;
+            margin-top: 20px;
+            color: #cccccc;
+        }
+        #number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00ccff;
+            margin: 20px 0;
+        }
+        #input {
+            padding: 12px;
+            text-align: center;
+            font-size: 26px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background: #2a2a2a;
+            color: #00ccff;
+            width: calc(100% - 24px);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+        }
+        #input:focus {
+            outline: none;
+            border-color: #0066ff;
+            box-shadow: 0 0 5px #0066ff;
+        }
+        #menu-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background: #ff4747;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+            border: none;
+            text-align: center;
+        }
+
+        #menu-button:hover {
+            background: #cc3838;
+        }
+        .progress-container {
+            width: 100%;
+            background-color: #f3f3f3;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #00ccff6d;
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" id="menu-button">Back to Menu</a>
+
+    <div class="container">
+        <button onclick="startGame()" id="btn">START</button>
+        <p id="text"></p>
+        <p id="number"></p>
+        <div class="progress-container" id="progi" style="display: none;">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <input type="number" style="display: none;" id="input" onkeypress="checkResult(event)">
+    </div>
+    <script>
+        let randomNumber = 0;
+        let level = 1;
+        let minRange = 1;
+        let maxRange = 10;
+        let timer = 1000;
+
+        function startGame() {
+            document.getElementById("btn").style.display = "none";
+            document.getElementById("number").style.display = "block";
+            randomNumber = Math.floor(Math.random() * (maxRange - minRange)) + minRange;
+            document.getElementById("number").innerHTML = randomNumber;
+            document.getElementById("progi").style.display = "block";
+            resetProgressBar();
+            updateProgressBar(timer, () => {
+                document.getElementById("progi").style.display = "none";
+                document.getElementById("number").style.display = "none";
+                const inputField = document.getElementById("input");
+                inputField.style.display = "block";
+                inputField.focus();
+            });
+            maxRange *= 10;
+            minRange *= 10;
+            timer += 350;
+        }
+
+        function checkResult(event) {
+            if (event.key === "Enter") {
+                const userInput = parseInt(document.getElementById("input").value, 10);
+                if (userInput === randomNumber) {
+                    document.getElementById("input").style.display = "none";
+                    document.getElementById("input").value = "";
+                    level++;
+                    document.getElementById("text").innerHTML = `Level: ${level}`;
+                } else {
+                    resetGame();
+                }
+                document.getElementById("btn").style.display = "block";
+                document.getElementById("btn").focus();
+            }
+        }
+
+        function resetProgressBar() {
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = '0%';
+        }
+
+        function updateProgressBar(duration, callback) {
+            const progressBar = document.getElementById('progressBar');
+            let start = null;
+            function animateProgressBar(timestamp) {
+                if (!start) start = timestamp;
+                const elapsed = timestamp - start;
+                const progress = Math.min((elapsed / duration) * 100, 100);
+                progressBar.style.width = progress + '%';
+                if (progress < 100) {
+                    requestAnimationFrame(animateProgressBar);
+                } else {
+                    if (callback) callback();
+                }
+            }
+            requestAnimationFrame(animateProgressBar);
+        }
+
+        function resetGame() {
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = '0%';
+            randomNumber = 0;
+            minRange = 1;
+            maxRange = 10;
+            timer = 1000;
+            level = 1;
+            document.getElementById("input").style.display = "none";
+            document.getElementById("btn").style.display = "block";
+            document.getElementById("btn").focus();
+            document.getElementById("input").value = "";
+            document.getElementById("number").innerHTML = "";
+            document.getElementById("text").innerHTML = `Level: ${level}`;
+        }
+    </script>
+</body>
+</html>

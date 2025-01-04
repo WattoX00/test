@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Benchmark</title>
+    <style>
+        /* General Styles */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #121212;
+    color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    text-align: center;
+}
+
+.title {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    color: #bb86fc;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: #a1a1a1;
+}
+
+/* Grid for Cards */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    max-width: 800px;
+    margin: auto;
+}
+
+/* Card Styles */
+.card {
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-decoration: none;
+    color: inherit;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.card .icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #bb86fc;
+}
+
+.card p {
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Responsiveness */
+@media (max-width: 600px) {
+    .title {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+
+    .card .icon {
+        font-size: 2rem;
+    }
+}
+
+    </style>
+    <script src="https://kit.fontawesome.com/7964c0a8ac.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Human Benchmark</h1>
+        <p class="subtitle">Select a benchmark to test your skills!</p>
+        <div class="grid">
+            <a href="verbal.html" class="card">
+                <i class="fas fa-book-open icon"></i>
+                <p>Verbal Memory</p>
+            </a>
+            <a href="number.html" class="card">
+                <i class="fas fa-calculator icon"></i>
+                <p>Number Memory</p>
+            </a>
+            <a href="memory.html" class="card">
+                <i class="fas fa-project-diagram icon"></i>
+                <p>Sequence Memory</p>
+            </a>
+            <a href="typing.html" class="card">
+                <i class="fas fa-keyboard icon"></i>
+                <p>Typing Test</p>
+            </a>
+            <a href="reaction.html" class="card">
+                <i class="fa-solid fa-bolt-lightning icon"></i>
+                <p>Reaction Time</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

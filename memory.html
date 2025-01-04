@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Game</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100&display=swap');
+
+    body {
+      font-family: "Noto Sans KR", serif;
+      font-optical-sizing: auto;
+      font-weight: 100;
+      font-style: normal;
+      text-align: center;
+      margin-top: 50px;
+      background-color: #121212;
+      color: #ffffff;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .button {
+      width: 100px;
+      height: 100px;
+      background-color: #444;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      border: 2px solid #111;
+    }
+
+    .button.active {
+      background-color: #00ccff;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    #results {
+      display: none;
+      font-size: 20px;
+      margin-top: 20px;
+    }
+    #startGame {
+      background: #0066ff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #menu-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background: #ff4747;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+            border: none;
+            text-align: center;
+        }
+
+        #menu-button:hover {
+            background: #cc3838;
+        }
+  </style>
+</head>
+<body>
+  <a href="index.html" id="menu-button">Back to Menu</a>
+  <h1>Memory Game</h1>
+  <div class="grid" id="grid">
+  </div>
+  <p id="message">Memorize the sequence!</p>
+  <p id="results"></p>
+  <button id="startGame">Start Game</button>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const message = document.getElementById('message');
+    const startGameButton = document.getElementById('startGame');
+    const results = document.getElementById('results');
+
+    let sequence = [];
+    let playerSequence = [];
+    let level = 0;
+    let isShowingSequence = false;
+
+    for (let i = 0; i < 9; i++) {
+      const button = document.createElement('div');
+      button.classList.add('button');
+      button.dataset.index = i;
+      grid.appendChild(button);
+
+      button.addEventListener('click', () => handlePlayerInput(i));
+    }
+
+    const buttons = document.querySelectorAll('.button');
+
+    startGameButton.addEventListener('click', startGame);
+
+    function startGame() {
+      sequence = [];
+      playerSequence = [];
+      level = 0;
+      message.textContent = 'Memorize the sequence!';
+      results.style.display = 'none';
+      grid.style.display = 'grid';
+      startGameButton.style.display = 'none'
+      nextLevel();
+    }
+
+    function nextLevel() {
+      level++;
+      playerSequence = [];
+      message.textContent = `Level ${level}`;
+
+      const randomIndex = Math.floor(Math.random() * 9);
+      sequence.push(randomIndex);
+      showSequence();
+    }
+
+    function showSequence() {
+      isShowingSequence = true;
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < sequence.length) {
+          const index = sequence[i];
+          highlightButton(index);
+          i++;
+        } else {
+          clearInterval(interval);
+          isShowingSequence = false;
+          message.textContent = 'Your turn!';
+        }
+      }, 1000);
+    }
+
+    function highlightButton(index) {
+      const button = buttons[index];
+      button.classList.add('active');
+      setTimeout(() => button.classList.remove('active'), 400);
+    }
+
+    function handlePlayerInput(index) {
+      if (sequence.length === 0 || isShowingSequence) return;
+      playerSequence.push(index);
+      highlightButton(index);
+
+      const currentStep = playerSequence.length - 1;
+      if (playerSequence[currentStep] !== sequence[currentStep]) {
+        message.textContent = 'Game over!';
+        grid.style.display = 'none';
+        results.style.display = 'block';
+        results.textContent = `Level: ${level}`;
+        startGameButton.style.display = 'block'
+        startGameButton.style.margin = '0 auto'
+        sequence = [];
+        return;
+      }
+
+      if (playerSequence.length === sequence.length) {
+        setTimeout(nextLevel, 1000);
+      }
+    }
+  </script>
+</body>
+</html>
